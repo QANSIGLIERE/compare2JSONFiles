@@ -77,5 +77,57 @@ test('Compare two same arrays', () => {
 });
 
 test('Compare two different arrays', () => {
-    expect(compare2JSONs(['text', { a: 1 }], ['text', { a: 1, b: 2 }])).toBeFalsy();
+    expect(compare2JSONs(['text', { a: 1 }], ['text', { a: 1, b: 2 }], ['a'])).toBeFalsy();
+});
+
+test('Compare two same json objects', () => {
+    expect(compare2JSONs({ id: 1, name: 'test' }, { id: 1, name: 'test' })).toBeTruthy();
+});
+
+test('Compare two json objects with similar keys', () => {
+    expect(compare2JSONs({ id: 1, name: 'test' }, { id: 1, name: 'test', rating: 5 })).toBeFalsy();
+});
+
+test('Compare a json object with a blank json', () => {
+    expect(compare2JSONs({ id: 1, name: 'test' }, {})).toBeFalsy();
+});
+
+test('Compare a blank json with a json', () => {
+    expect(compare2JSONs({}, { id: 1, name: 'test' })).toBeFalsy();
+});
+
+test('Compare two json objects with different values', () => {
+    expect(compare2JSONs({ id: 1, name: 'test' }, { id: 2, name: 'test' })).toBeFalsy();
+});
+
+test('Compare two arrays with similar json objects', () => {
+    expect(
+        compare2JSONs(
+            [
+                { id: 1, name: 'test' },
+                { id: 2, name: 'book' },
+            ],
+            [
+                { id: 1, name: 'test' },
+                { id: 2, name: 'books' },
+            ],
+            ['id'],
+        ),
+    ).toBeFalsy();
+});
+
+test('Compare two arrays with the same json objects', () => {
+    expect(
+        compare2JSONs(
+            [
+                { id: 1, name: 'test' },
+                { id: 2, name: 'book' },
+            ],
+            [
+                { id: 2, name: 'book' },
+                { id: 1, name: 'test' },
+            ],
+            ['id'],
+        ),
+    ).toBeFalsy();
 });

@@ -1,7 +1,18 @@
 // Author https://www.youtube.com/@QANSIGLIERE/
 // CommonJS
 
+function convertJSONToString(jsonObject) {
+    if (typeof jsonObject == 'object' && jsonObject != null && !Array.isArray(jsonObject)) {
+        return JSON.stringify(jsonObject);
+    } else {
+        return jsonObject;
+    }
+}
+
 function errorMessage(expectedValue, actualValue, errorMessage, parentExpectedResult, parentActualResult) {
+    /////////////////
+    // REFACTOR ME //
+    /////////////////
     if (expectedValue != parentExpectedResult || actualValue != parentActualResult) {
         if (typeof actualValue == 'object' && typeof expectedValue == 'object') {
             console.log(`
@@ -17,6 +28,26 @@ function errorMessage(expectedValue, actualValue, errorMessage, parentExpectedRe
     }
 
     if (typeof actualValue == 'object' && typeof expectedValue == 'object') {
+        let expectedValueKeysDiff = [];
+        let actualValueKeysDiff = [];
+        Object.keys(expectedValue)
+            .sort()
+            .forEach(x => {
+                if (!Object.keys(actualValue).includes(x)) expectedValueKeysDiff.push(x);
+            });
+        Object.keys(actualValue)
+            .sort()
+            .forEach(x => {
+                if (!Object.keys(expectedValue).includes(x)) actualValueKeysDiff.push(x);
+            });
+
+        console.log(`
+            Expected result keys length: ${Object.keys(expectedValue).length}
+            Actual result keys length: ${Object.keys(actualValue).length} 
+            Difference in expected results keys: ${expectedValueKeysDiff}
+            Difference in actual results keys: ${actualValueKeysDiff}
+            `);
+
         console.log(`
         Expected result: ${JSON.stringify(expectedValue)}
         Actual result: ${JSON.stringify(actualValue)}
@@ -57,7 +88,9 @@ function compare2JSONs(
     parentExpectedResult = expectedResult,
     parentActualResult = actualResult,
 ) {
-    // Make a default state for the flag
+    ///////////////////////////////////////
+    // Make a default state for the flag //
+    ///////////////////////////////////////
     let areTheySame = true;
     // Ensure we compare the same types of data
     if (typeof expectedResult != typeof actualResult) {
@@ -91,7 +124,9 @@ function compare2JSONs(
                 );
             }
         } else if (typeof actualResult == 'object') {
-            // NULL
+            //////////
+            // NULL //
+            //////////
             if (actualResult == null && actualResult != expectedResult) {
                 // Change the flag
                 areTheySame = false;
@@ -104,9 +139,14 @@ function compare2JSONs(
                     parentActualResult,
                 );
             }
-            // JSON
-            if (!Array.isArray(actualResult)) {
-                // If the expected result is not a JSON
+
+            //////////
+            // JSON //
+            //////////
+            if (!Array.isArray(actualResult) && actualResult != null) {
+                //////////////////////////////////////////
+                // If the expected result is not a JSON //
+                //////////////////////////////////////////
                 if (Array.isArray(expectedResult)) {
                     // Change the flag
                     areTheySame = false;
@@ -119,8 +159,53 @@ function compare2JSONs(
                         parentActualResult,
                     );
                 }
+
+                /////////////////////////////////////
+                // Compare the number of JSON keys //
+                /////////////////////////////////////
+                if (Object.keys(actualResult).length != Object.keys(expectedResult).length) {
+                    // Change the flag
+                    areTheySame = false;
+                    // Warnign message
+                    errorMessage(
+                        expectedResult,
+                        actualResult,
+                        'The numbers of keys in actual result and expected result do not match!',
+                        parentExpectedResult,
+                        parentActualResult,
+                    );
+                }
+
+                ////////////////////////
+                // Compare JSONs keys //
+                ////////////////////////
+                let actualResultSortedKeys = Object.keys(actualResult).sort();
+                let expectedResultSortedKeys = Object.keys(expectedResult).sort();
+
+                //
+                let matchingKeysFromActualToExpected = [];
+                actualResultSortedKeys.forEach(x => {
+                    if (expectedResultSortedKeys.includes(x)) matchingKeysFromActualToExpected.push(x);
+                });
+
+                matchingKeysFromActualToExpected.forEach(x => {
+                    if (
+                        !compare2JSONs(
+                            expectedResult[x],
+                            actualResult[x],
+                            uniquenessJSONKeys,
+                            expectedResult,
+                            actualResult,
+                        )
+                    )
+                        areTheySame = false;
+                });
             }
-            // Array
+
+            ///////////
+            // Array //
+            ///////////
+
             if (Array.isArray(actualResult)) {
                 // If the expected result is not an Array
                 if (!Array.isArray(expectedResult)) {
@@ -135,13 +220,8 @@ function compare2JSONs(
                         parentActualResult,
                     );
                 } else {
-                    // Sort arrays
-                    // Length, Items
-                    let sortedActualResult = actualResult.sort();
-                    let sortedExpectedResults = expectedResult.sort();
-
                     // Arrays have different length
-                    if (sortedActualResult.length != sortedExpectedResults.length) {
+                    if (actualResult.length != expectedResult.length) {
                         // Change the flag
                         areTheySame = false;
                         // Warnign message
@@ -155,19 +235,83 @@ function compare2JSONs(
                     }
 
                     // Compare items from arrays
-                    if (sortedActualResult.length > 0) {
-                        for (let index = 0; index < sortedActualResult.length; index++) {
-                            if (sortedActualResult[index] != sortedExpectedResults[index]) {
-                                // Change the flag
-                                areTheySame = false;
-                                // Warnign message
-                                errorMessage(
-                                    sortedActualResult[index],
-                                    sortedExpectedResults[index],
-                                    'These two arrays have different items!',
-                                    parentExpectedResult,
-                                    parentActualResult,
-                                );
+                    let actualResultSorted = actualResult.sort();
+                    let expectedResultSorted = expectedResult.sort();
+
+                    if (actualResultSorted.length > 0) {
+                        // Validate uniquenessJSONKeys value
+                        if (!Array.isArray(uniquenessJSONKeys))
+                            console.log(`
+uniquenessJSONKeys has a wrong type. It should be an array
+Typeof uniquenessJSONKeys: ${typeof uniquenessJSONKeys}
+uniquenessJSONKeys: ${uniquenessJSONKeys}`);
+
+                        for (let index = 0; index < actualResultSorted.length; index++) {
+                            if (
+                                typeof actualResultSorted[index] == 'object' &&
+                                !Array.isArray(actualResultSorted[index])
+                            ) {
+                                if (uniquenessJSONKeys.length > 0) {
+                                    let arrayWithExistingUniquenessKeys = uniquenessJSONKeys.filter(key =>
+                                        Object.keys(actualResultSorted[index]).includes(key),
+                                    );
+                                    if (arrayWithExistingUniquenessKeys.length > 0) {
+                                        let uniquenessKey = arrayWithExistingUniquenessKeys[0];
+                                        let foundSimilarItem = false;
+                                        expectedResultSorted.forEach(x => {
+                                            if (x[uniquenessKey] == actualResultSorted[index][uniquenessKey]) {
+                                                foundSimilarItem = true;
+                                                console.log(
+                                                    `${JSON.stringify(x)} VS ${JSON.stringify(
+                                                        actualResultSorted[index],
+                                                    )}`,
+                                                ); // Remove me
+                                                if (
+                                                    !compare2JSONs(
+                                                        x,
+                                                        actualResultSorted[index],
+                                                        uniquenessJSONKeys,
+                                                        expectedResult,
+                                                        actualResult,
+                                                    )
+                                                )
+                                                    areTheySame = false;
+                                            }
+                                            if (!foundSimilarItem) {
+                                                // Change the flag
+                                                areTheySame = false;
+                                                // Warnign message
+                                                errorMessage(
+                                                    expectedResultSorted,
+                                                    actualResultSorted,
+                                                    'Did not found any similar item by suggested uniquenessJSONKeys key',
+                                                    parentExpectedResult,
+                                                    parentActualResult,
+                                                );
+                                            }
+                                        });
+                                    } else {
+                                        console.log(`
+Warning! Suggested keys in uniquenessJSONKeys are not acceptable
+uniquenessJSONKeys: ${uniquenessJSONKeys}`);
+                                    }
+                                } else {
+                                    console.log(`
+Warning! uniquenessJSONKeys has no items
+uniquenessJSONKeys: ${uniquenessJSONKeys}`);
+                                }
+                            } else {
+                                // Compare non-object items
+                                if (
+                                    !compare2JSONs(
+                                        expectedResultSorted[index],
+                                        actualResultSorted[index],
+                                        uniquenessJSONKeys,
+                                        expectedResult,
+                                        actualResult,
+                                    )
+                                )
+                                    areTheySame = false;
                             }
                         }
                     }
@@ -187,7 +331,7 @@ function compare2JSONs(
         }
     }
 
-    return areTheySame; //
+    return areTheySame;
 }
 
 module.exports.compare2JSONs = compare2JSONs;
