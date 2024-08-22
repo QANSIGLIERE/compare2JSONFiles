@@ -30,28 +30,24 @@ console.log(compare2JSONs({ id: 1, name: 'iphone' }, { id: 1, name: 'android', v
 Output
 
 ```
-            Expected result keys length: 2
-            Actual result keys length: 3
-            Difference in expected results keys:
-            Difference in actual results keys: version
+Expected result keys length: 2
+Actual result keys length: 3
+Difference in expected results keys:
+Difference in actual results keys: version
 
 
-        Expected result: {"id":1,"name":"iphone"}
-        Actual result: {"id":1,"name":"android","version":1}
-        Error: The numbers of keys in actual result and expected result do not match!
+Expected result: {"id":1,"name":"iphone"}
+Actual result: {"id":1,"name":"android","version":1}
+Error: The numbers of keys in actual result and expected result do not match!
 
-        Parent Expected result: [object Object]
-        Parent Actual result: [object Object]
-        Type of parent expected result: object
-        Type of parent actual result: object
+Parent Expected result: {"id":1,"name":"iphone"}
+Parent Actual result: {"id":1,"name":"android","version":1}
+
 
 Expected result: iphone
 Actual result: android
-Type of expected result: string
-Type of actual result: string
 Error: These two objects do not match to each other!
 false
-
 ```
 
 ### ES Module
@@ -68,26 +64,22 @@ console.log(compare2JSONs({ id: 1, name: 'iphone' }, { id: 1, name: 'android', v
 Output
 
 ```
-            Expected result keys length: 2
-            Actual result keys length: 3
-            Difference in expected results keys:
-            Difference in actual results keys: version
+Expected result keys length: 2
+Actual result keys length: 3
+Difference in expected results keys:
+Difference in actual results keys: version
 
 
-        Expected result: {"id":1,"name":"iphone"}
-        Actual result: {"id":1,"name":"android","version":1}
-        Error: The numbers of keys in actual result and expected result do not match!
+Expected result: {"id":1,"name":"iphone"}
+Actual result: {"id":1,"name":"android","version":1}
+Error: The numbers of keys in actual result and expected result do not match!
 
-        Parent Expected result: [object Object]
-        Parent Actual result: [object Object]
-        Type of parent expected result: object
-        Type of parent actual result: object
+Parent Expected result: {"id":1,"name":"iphone"}
+Parent Actual result: {"id":1,"name":"android","version":1}
+
 
 Expected result: iphone
 Actual result: android
-Type of expected result: string
-Type of actual result: string
 Error: These two objects do not match to each other!
 false
-
 ```
