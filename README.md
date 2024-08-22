@@ -22,7 +22,7 @@ Using npm:
 ### CommonJS
 
 ```
-var { compare2JSONs } = require('../index.js');
+var { compare2JSONs } = require('qansigliere-compare2jsons');
 
 console.log(compare2JSONs({ id: 1, name: 'iphone' }, { id: 1, name: 'android', version: 1 }, ['id']));
 ```

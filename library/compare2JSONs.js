@@ -1,30 +1,24 @@
 // Author https://www.youtube.com/@QANSIGLIERE/
 // CommonJS
 
-function convertJSONToString(jsonObject) {
-    if (typeof jsonObject == 'object' && jsonObject != null && !Array.isArray(jsonObject)) {
-        return JSON.stringify(jsonObject);
-    } else {
-        return jsonObject;
-    }
-}
-
 function errorMessage(expectedValue, actualValue, errorMessage, parentExpectedResult, parentActualResult) {
     /////////////////
     // REFACTOR ME //
     /////////////////
     if (expectedValue != parentExpectedResult || actualValue != parentActualResult) {
-        if (typeof actualValue == 'object' && typeof expectedValue == 'object') {
-            console.log(`
-                Parent Expected result: ${JSON.stringify(parentExpectedResult)}
-                Parent Actual result: ${JSON.stringify(parentActualResult)}`);
-        } else {
-            console.log(`
-        Parent Expected result: ${parentExpectedResult}
-        Parent Actual result: ${parentActualResult}
-        Type of parent expected result: ${typeof parentExpectedResult}
-        Type of parent actual result: ${typeof parentActualResult}`);
+        console.log(`
+Parent Expected result: ${
+            typeof parentExpectedResult == 'object' ? JSON.stringify(parentExpectedResult) : parentExpectedResult
         }
+Parent Actual result: ${typeof parentActualResult == 'object' ? JSON.stringify(parentActualResult) : parentActualResult}
+`);
+    }
+
+    if (typeof expectedValue != typeof actualValue) {
+        console.log(`
+Typeof Expected result: ${typeof expectedValue}
+Typeof Actual result: ${typeof actualValue}
+`);
     }
 
     if (typeof actualValue == 'object' && typeof expectedValue == 'object') {
@@ -42,16 +36,16 @@ function errorMessage(expectedValue, actualValue, errorMessage, parentExpectedRe
             });
 
         console.log(`
-            Expected result keys length: ${Object.keys(expectedValue).length}
-            Actual result keys length: ${Object.keys(actualValue).length} 
-            Difference in expected results keys: ${expectedValueKeysDiff}
-            Difference in actual results keys: ${actualValueKeysDiff}
-            `);
+Expected result keys length: ${Object.keys(expectedValue).length}
+Actual result keys length: ${Object.keys(actualValue).length} 
+Difference in expected results keys: ${expectedValueKeysDiff}
+Difference in actual results keys: ${actualValueKeysDiff}
+`);
 
         console.log(`
-        Expected result: ${JSON.stringify(expectedValue)}
-        Actual result: ${JSON.stringify(actualValue)}
-        Error: ${errorMessage}`);
+Expected result: ${JSON.stringify(expectedValue)}
+Actual result: ${JSON.stringify(actualValue)}
+Error: ${errorMessage}`);
     } else {
         console.log(`
 Expected result: ${expectedValue}
@@ -74,8 +68,10 @@ Error: ${errorMessage}`);
         console.log(`
 Expected result length: ${expectedValue.length}
 Actual result length: ${actualValue.length} 
-Difference in expected results: ${expectedValueDiff}
-Difference in actual results: ${actualValueDiff}
+Difference in expected results: ${
+            typeof expectedValueDiff == 'object' ? JSON.stringify(expectedValueDiff) : expectedValueDiff
+        }
+Difference in actual results: ${typeof actualValueDiff == 'object' ? JSON.stringify(actualValueDiff) : actualValueDiff}
 `);
     }
 }
@@ -261,11 +257,6 @@ uniquenessJSONKeys: ${uniquenessJSONKeys}`);
                                         expectedResultSorted.forEach(x => {
                                             if (x[uniquenessKey] == actualResultSorted[index][uniquenessKey]) {
                                                 foundSimilarItem = true;
-                                                console.log(
-                                                    `${JSON.stringify(x)} VS ${JSON.stringify(
-                                                        actualResultSorted[index],
-                                                    )}`,
-                                                ); // Remove me
                                                 if (
                                                     !compare2JSONs(
                                                         x,
