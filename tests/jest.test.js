@@ -129,5 +129,5 @@ test('Compare two arrays with the same json objects', () => {
             ],
             ['id'],
         ),
-    ).toBeFalsy();
+    ).toBeTruthy();
 });
