@@ -1,6 +1,22 @@
 // Author https://www.youtube.com/@QANSIGLIERE/
 // CommonJS
 
+function areIdentical(actualValue, expectedValue) {
+    let actualValueKeys = Object.keys(actualValue);
+    let expectedValueKeys = Object.keys(expectedValue);
+
+    if (actualValueKeys.length != expectedValueKeys.length) {
+        return 0;
+    } else {
+        let result = 0;
+        actualValueKeys.forEach(x => {
+            if (actualValue[x] == expectedValue[x]) result += (1 / actualValueKeys.length) * 100;
+        });
+
+        return result;
+    }
+}
+
 function errorMessage(expectedValue, actualValue, errorMessage, parentExpectedResult, parentActualResult) {
     ///////////////////////////////////////
     // Provide info about parent objects //
@@ -61,10 +77,12 @@ Difference in actual results keys: ${actualValueKeysDiff}
         let expectedValueDiff = [];
         let actualValueDiff = [];
         expectedValue.forEach(x => {
-            if (!actualValue.includes(x)) expectedValueDiff.push(x);
+            if (!(actualValue.filter(y => areIdentical(y, x) > 99).length > 0 ? true : false))
+                expectedValueDiff.push(x);
         });
         actualValue.forEach(x => {
-            if (!expectedValue.includes(x)) actualValueDiff.push(x);
+            if (!(expectedValue.filter(y => areIdentical(y, x) > 99).length > 0 ? true : false))
+                actualValueDiff.push(x);
         });
 
         console.log(`
@@ -315,7 +333,7 @@ uniquenessJSONKeys: ${uniquenessJSONKeys}`);
                                         areTheySame = false;
                                         errorMessage(
                                             expectedResultSorted,
-                                            actualResultSorted,
+                                            actualItem,
                                             `Did not find any similar item by suggested uniquenessJSONKeys key ${uniquenessKey}`,
                                             parentExpectedResult,
                                             parentActualResult,
