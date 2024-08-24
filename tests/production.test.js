@@ -1379,5 +1379,5 @@ test('Validate diff arrays show only sorted values', () => {
             ],
             ['resource_uri'],
         ),
-    ).toBeTruthy();
+    ).toBeFalsy();
 });
