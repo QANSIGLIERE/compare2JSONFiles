@@ -7,6 +7,8 @@ clear, detailed report of their differences.
 
 https://www.youtube.com/@QANSIGLIERE/
 
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/gYegROgTqNg/0.jpg)](https://www.youtube.com/watch?v=gYegROgTqNg)
+
 ## Installing
 
 Using npm:
