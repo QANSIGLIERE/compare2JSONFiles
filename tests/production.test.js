@@ -1381,3 +1381,71 @@ test('Validate diff arrays show only sorted values', () => {
         ),
     ).toBeFalsy();
 });
+
+test('Show uniqueenssJSONKeys message only once', () => {
+    expect(
+        compare2JSONs(
+            [
+                {
+                    id: 1,
+                    uuid: '02273278-a547-4440-a068-9776e6c82da3',
+                },
+                {
+                    id: 2,
+                    uuid: '19991db0-a909-4ed2-bf02-6eacad99fed2',
+                },
+                {
+                    id: 34,
+                    uuid: 'bf4c397f-dd87-4ae9-bb89-f3b95d561837',
+                },
+                {
+                    id: 35,
+                    uuid: '2a50283c-8f30-4f58-89e4-0c1884fca3c9',
+                },
+                {
+                    id: 36,
+                    uuid: 'ed4b9ca7-6a3c-4297-bcf6-cb8779fb38e3',
+                },
+                {
+                    id: 37,
+                    uuid: '61520d78-979c-4ad3-a024-e15fce9d1e50',
+                },
+                {
+                    id: 38,
+                    uuid: '8fb59ff0-63fd-42f3-ab6c-5c37dd964792',
+                },
+            ],
+            [
+                {
+                    id: 1,
+                    uuid: '02273278-a547-4440-a068-9776e6c82da3',
+                },
+                {
+                    id: 2,
+                    uuid: '19991db0-a909-4ed2-bf02-6eacad99fed2',
+                },
+                {
+                    id: 34,
+                    uuid: 'bf4c397f-dd87-4ae9-bb89-f3b95d561837',
+                },
+                {
+                    id: 35,
+                    uuid: '2a50283c-8f30-4f58-89e4-0c1884fca3c9',
+                },
+                {
+                    id: 36,
+                    uuid: 'ed4b9ca7-6a3c-4297-bcf6-cb8779fb38e3',
+                },
+                {
+                    id: 37,
+                    uuid: '61520d78-979c-4ad3-a024-e15fce9d1e50',
+                },
+                {
+                    id: 38,
+                    uuid: '8fb59ff0-63fd-42f3-ab6c-5c37dd964792',
+                },
+            ],
+            [],
+        ),
+    ).toBeTruthy();
+});
