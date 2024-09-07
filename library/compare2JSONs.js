@@ -17,11 +17,18 @@ function areIdentical(actualValue, expectedValue) {
     }
 }
 
-function errorMessage(expectedValue, actualValue, errorMessage, parentExpectedResult, parentActualResult) {
+function errorMessage(
+    expectedValue,
+    actualValue,
+    errorMessage,
+    parentExpectedResult,
+    parentActualResult,
+    showParentObjects = true,
+) {
     ///////////////////////////////////////
     // Provide info about parent objects //
     ///////////////////////////////////////
-    if (expectedValue != parentExpectedResult || actualValue != parentActualResult) {
+    if ((expectedValue != parentExpectedResult || actualValue != parentActualResult) && showParentObjects) {
         console.log(`
 Parent Expected result: ${
             typeof parentExpectedResult == 'object' ? JSON.stringify(parentExpectedResult) : parentExpectedResult
@@ -123,6 +130,7 @@ function compare2JSONs(
     uniquenessJSONKeys = [],
     parentExpectedResult = expectedResult,
     parentActualResult = actualResult,
+    showParentObjects = true,
 ) {
     ///////////////////////////////////////
     // Make a default state for the flag //
@@ -143,7 +151,9 @@ function compare2JSONs(
             'Objects have different typeof values',
             parentExpectedResult,
             parentActualResult,
+            showParentObjects,
         );
+        showParentObjects = false;
 
         //////////////////////
         // NULL VS NON-NULL //
@@ -159,7 +169,9 @@ function compare2JSONs(
             'One of the objects is not null',
             parentExpectedResult,
             parentActualResult,
+            showParentObjects,
         );
+        showParentObjects = false;
         ////////////////////////
         // Array VS NON-Array //
         ////////////////////////
@@ -174,7 +186,9 @@ function compare2JSONs(
             'One of the objects is not an array',
             parentExpectedResult,
             parentActualResult,
+            showParentObjects,
         );
+        showParentObjects = false;
     } else if (!isNull(actualResult)) {
         //////////////////////////////////////////////
         // Undefined || Number || String || Boolean //
@@ -196,7 +210,9 @@ function compare2JSONs(
                     'These two objects have different values',
                     parentExpectedResult,
                     parentActualResult,
+                    showParentObjects,
                 );
+                showParentObjects = false;
             }
         } else if (typeof actualResult == 'object' && !isNull(actualResult)) {
             //////////
@@ -217,7 +233,9 @@ function compare2JSONs(
                         'The numbers of keys in actual result and expected result do not match!',
                         parentExpectedResult,
                         parentActualResult,
+                        showParentObjects,
                     );
+                    showParentObjects = false;
                 }
 
                 ////////////////////////
@@ -244,9 +262,12 @@ function compare2JSONs(
                                 uniquenessJSONKeys,
                                 expectedResult,
                                 actualResult,
+                                showParentObjects,
                             )
-                        )
+                        ) {
                             areTheySame = false;
+                            showParentObjects = false;
+                        }
                     });
                 }
             }
@@ -267,7 +288,9 @@ function compare2JSONs(
                         'These two arrays have different length!',
                         parentExpectedResult,
                         parentActualResult,
+                        showParentObjects,
                     );
+                    showParentObjects = false;
                 }
 
                 if (actualResult.length > 0 && expectedResult.length > 0) {
@@ -320,9 +343,11 @@ uniquenessJSONKeys: ${uniquenessJSONKeys}`);
                                                     uniquenessJSONKeys,
                                                     expectedResult,
                                                     actualResult,
+                                                    showParentObjects,
                                                 )
                                             ) {
                                                 areTheySame = false;
+                                                showParentObjects = false;
                                             }
                                         }
                                     });
@@ -337,7 +362,9 @@ uniquenessJSONKeys: ${uniquenessJSONKeys}`);
                                             `Did not find any similar item by suggested uniquenessJSONKeys key ${uniquenessKey}`,
                                             parentExpectedResult,
                                             parentActualResult,
+                                            showParentObjects,
                                         );
+                                        showParentObjects = false;
                                     }
                                 } else
                                     console.log(`
@@ -356,9 +383,12 @@ You could use one of the following keys ${keys(actualItem)}`);
                                     uniquenessJSONKeys,
                                     expectedResult,
                                     actualResult,
+                                    showParentObjects,
                                 )
-                            )
+                            ) {
                                 areTheySame = false;
+                                showParentObjects = false;
+                            }
                         }
                     }
                 }
@@ -366,14 +396,15 @@ You could use one of the following keys ${keys(actualItem)}`);
         } else {
             // Change the flag
             areTheySame = false;
-            // Warnign message
             errorMessage(
                 expectedResult,
                 actualResult,
                 'These types of data are not supported yet!',
                 parentExpectedResult,
                 parentActualResult,
+                showParentObjects,
             );
+            showParentObjects = false;
         }
     }
 
