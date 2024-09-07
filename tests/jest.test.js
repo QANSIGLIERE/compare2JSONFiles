@@ -131,3 +131,19 @@ test('Compare two arrays with the same json objects', () => {
         ),
     ).toBeTruthy();
 });
+
+test('Compare two arrays with similar json objects and arrays of objects', () => {
+    expect(
+        compare2JSONs(
+            [
+                { id: 2, name: 'book', cars: [{ name: 'porsche' }, { name: 'alfa romeo' }] },
+                { id: 1, name: 'test' },
+            ],
+            [
+                { id: 1, name: 'test' },
+                { id: 2, name: 'book', cars: [{ name: 'porsche' }, { name: 'alfa romeos' }] },
+            ],
+            ['id', 'name'],
+        ),
+    ).toBeFalsy();
+});

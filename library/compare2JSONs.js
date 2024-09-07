@@ -17,17 +17,27 @@ function areIdentical(actualValue, expectedValue) {
     }
 }
 
-function errorMessage(expectedValue, actualValue, errorMessage, parentExpectedResult, parentActualResult) {
+function errorMessage(
+    expectedValue,
+    actualValue,
+    errorMessage,
+    parentExpectedResult,
+    parentActualResult,
+    showParentObjects = true,
+) {
+    let prefix = '### Error ###';
+
     ///////////////////////////////////////
     // Provide info about parent objects //
     ///////////////////////////////////////
-    if (expectedValue != parentExpectedResult || actualValue != parentActualResult) {
+    if ((expectedValue != parentExpectedResult || actualValue != parentActualResult) && showParentObjects) {
         console.log(`
+${prefix}
 Parent Expected result: ${
             typeof parentExpectedResult == 'object' ? JSON.stringify(parentExpectedResult) : parentExpectedResult
         }
 Parent Actual result: ${typeof parentActualResult == 'object' ? JSON.stringify(parentActualResult) : parentActualResult}
-`);
+\n`);
     }
 
     ///////////////////////////////////////
@@ -35,9 +45,10 @@ Parent Actual result: ${typeof parentActualResult == 'object' ? JSON.stringify(p
     ///////////////////////////////////////
     if (typeof expectedValue != typeof actualValue) {
         console.log(`
+${prefix}
 Typeof Expected result: ${typeof expectedValue}
 Typeof Actual result: ${typeof actualValue}
-`);
+\n`);
     }
 
     ////////////
@@ -63,11 +74,12 @@ Typeof Actual result: ${typeof actualValue}
             });
 
         console.log(`
+${prefix}
 Expected result keys length: ${keys(expectedValue).length}
 Actual result keys length: ${keys(actualValue).length} 
 Difference in expected results keys: ${expectedValueKeysDiff}
 Difference in actual results keys: ${actualValueKeysDiff}
-`);
+\n`);
     }
 
     ///////////
@@ -86,22 +98,41 @@ Difference in actual results keys: ${actualValueKeysDiff}
         });
 
         console.log(`
+${prefix}
 Expected result length: ${expectedValue.length}
 Actual result length: ${actualValue.length} 
 Difference in expected results: ${
             typeof expectedValueDiff == 'object' ? JSON.stringify(expectedValueDiff) : expectedValueDiff
         }
 Difference in actual results: ${typeof actualValueDiff == 'object' ? JSON.stringify(actualValueDiff) : actualValueDiff}
-`);
+\n`);
     }
 
     ///////////////////
     // Error Message //
     ///////////////////
     console.log(`
+${prefix}
 Expected result: ${typeof expectedValue == 'object' ? JSON.stringify(expectedValue) : expectedValue}
 Actual result: ${typeof actualValue == 'object' ? JSON.stringify(actualValue) : actualValue}
-${errorMessage}`);
+${errorMessage}
+\n`);
+}
+
+function errorMessageUniquenessJSONKeys(uniquenessJSONKeys, errorMessage, suggestedKeys = '', showMessage = true) {
+    if (showMessage)
+        console.log(`
+${errorMessage}
+uniquenessJSONKeys: ${uniquenessJSONKeys}`);
+
+    if (!Array.isArray(uniquenessJSONKeys) && showMessage)
+        console.log(`
+Typeof uniquenessJSONKeys: ${typeof uniquenessJSONKeys}`);
+
+    if (suggestedKeys && showMessage) {
+        console.log(`
+You could use one of the following keys ${suggestedKeys}`);
+    }
 }
 
 function isNull(value) {
@@ -123,6 +154,7 @@ function compare2JSONs(
     uniquenessJSONKeys = [],
     parentExpectedResult = expectedResult,
     parentActualResult = actualResult,
+    showParentObjects = true,
 ) {
     ///////////////////////////////////////
     // Make a default state for the flag //
@@ -143,7 +175,9 @@ function compare2JSONs(
             'Objects have different typeof values',
             parentExpectedResult,
             parentActualResult,
+            showParentObjects,
         );
+        showParentObjects = false;
 
         //////////////////////
         // NULL VS NON-NULL //
@@ -159,7 +193,9 @@ function compare2JSONs(
             'One of the objects is not null',
             parentExpectedResult,
             parentActualResult,
+            showParentObjects,
         );
+        showParentObjects = false;
         ////////////////////////
         // Array VS NON-Array //
         ////////////////////////
@@ -174,7 +210,9 @@ function compare2JSONs(
             'One of the objects is not an array',
             parentExpectedResult,
             parentActualResult,
+            showParentObjects,
         );
+        showParentObjects = false;
     } else if (!isNull(actualResult)) {
         //////////////////////////////////////////////
         // Undefined || Number || String || Boolean //
@@ -196,7 +234,9 @@ function compare2JSONs(
                     'These two objects have different values',
                     parentExpectedResult,
                     parentActualResult,
+                    showParentObjects,
                 );
+                showParentObjects = false;
             }
         } else if (typeof actualResult == 'object' && !isNull(actualResult)) {
             //////////
@@ -217,7 +257,9 @@ function compare2JSONs(
                         'The numbers of keys in actual result and expected result do not match!',
                         parentExpectedResult,
                         parentActualResult,
+                        showParentObjects,
                     );
+                    showParentObjects = false;
                 }
 
                 ////////////////////////
@@ -244,9 +286,12 @@ function compare2JSONs(
                                 uniquenessJSONKeys,
                                 expectedResult,
                                 actualResult,
+                                showParentObjects,
                             )
-                        )
+                        ) {
                             areTheySame = false;
+                            showParentObjects = false;
+                        }
                     });
                 }
             }
@@ -267,10 +312,16 @@ function compare2JSONs(
                         'These two arrays have different length!',
                         parentExpectedResult,
                         parentActualResult,
+                        showParentObjects,
                     );
+                    showParentObjects = false;
                 }
 
-                if (actualResult.length > 0 && expectedResult.length > 0) {
+                if (
+                    actualResult.length > 0 &&
+                    expectedResult.length > 0 &&
+                    JSON.stringify(actualResult) != JSON.stringify(expectedResult)
+                ) {
                     // Compare items from arrays
                     let actualResultSorted = actualResult.sort();
                     let expectedResultSorted = expectedResult.sort();
@@ -278,6 +329,7 @@ function compare2JSONs(
                     /////////////////////////////////////
                     // Check each item in actual array //
                     /////////////////////////////////////
+                    let showUniquenessJSONKeysError = true;
                     for (
                         let index = 0;
                         index < Math.min(actualResultSorted.length, expectedResultSorted.length);
@@ -289,16 +341,24 @@ function compare2JSONs(
                             /////////////////////////////////////////////
                             // Validate uniquenessJSONKeys is an array //
                             /////////////////////////////////////////////
-                            if (!isArray(uniquenessJSONKeys))
-                                console.log(`
-uniquenessJSONKeys has a wrong type. It should be an array
-Typeof uniquenessJSONKeys: ${typeof uniquenessJSONKeys}
-uniquenessJSONKeys: ${uniquenessJSONKeys}`);
+                            if (!isArray(uniquenessJSONKeys)) {
+                                errorMessageUniquenessJSONKeys(
+                                    uniquenessJSONKeys,
+                                    'uniquenessJSONKeys has a wrong type. It should be an array',
+                                    '',
+                                    showUniquenessJSONKeysError,
+                                );
+                                showUniquenessJSONKeysError = false;
+                            }
 
                             if (uniquenessJSONKeys.length == 0) {
-                                console.log(`
-Warning! uniquenessJSONKeys array doesn't have any item
-uniquenessJSONKeys: ${uniquenessJSONKeys}`);
+                                errorMessageUniquenessJSONKeys(
+                                    uniquenessJSONKeys,
+                                    "Warning! uniquenessJSONKeys array doesn't have any item",
+                                    '',
+                                    showUniquenessJSONKeysError,
+                                );
+                                showUniquenessJSONKeysError = false;
                             } else {
                                 let arrayWithExistingUniquenessKeys = uniquenessJSONKeys.filter(x =>
                                     keys(actualItem).includes(x),
@@ -320,9 +380,11 @@ uniquenessJSONKeys: ${uniquenessJSONKeys}`);
                                                     uniquenessJSONKeys,
                                                     expectedResult,
                                                     actualResult,
+                                                    showParentObjects,
                                                 )
                                             ) {
                                                 areTheySame = false;
+                                                showParentObjects = false;
                                             }
                                         }
                                     });
@@ -334,16 +396,21 @@ uniquenessJSONKeys: ${uniquenessJSONKeys}`);
                                         errorMessage(
                                             expectedResultSorted,
                                             actualItem,
-                                            `Did not find any similar item by suggested uniquenessJSONKeys key ${uniquenessKey}`,
+                                            `Did not find any similar item by suggested uniquenessJSONKeys key --${uniquenessKey}--`,
                                             parentExpectedResult,
                                             parentActualResult,
+                                            showParentObjects,
                                         );
+                                        showParentObjects = false;
                                     }
                                 } else
-                                    console.log(`
-Warning! Suggested keys from uniquenessJSONKeys are not acceptable
-uniquenessJSONKeys: ${uniquenessJSONKeys}
-You could use one of the following keys ${keys(actualItem)}`);
+                                    errorMessageUniquenessJSONKeys(
+                                        uniquenessJSONKeys,
+                                        'Warning! Suggested keys from uniquenessJSONKeys are not acceptable',
+                                        keys(actualItem),
+                                        showUniquenessJSONKeysError,
+                                    );
+                                showUniquenessJSONKeysError = false;
                             }
                         } else {
                             //////////////////////////////////////////////////
@@ -356,9 +423,12 @@ You could use one of the following keys ${keys(actualItem)}`);
                                     uniquenessJSONKeys,
                                     expectedResult,
                                     actualResult,
+                                    showParentObjects,
                                 )
-                            )
+                            ) {
                                 areTheySame = false;
+                                showParentObjects = false;
+                            }
                         }
                     }
                 }
@@ -366,14 +436,15 @@ You could use one of the following keys ${keys(actualItem)}`);
         } else {
             // Change the flag
             areTheySame = false;
-            // Warnign message
             errorMessage(
                 expectedResult,
                 actualResult,
                 'These types of data are not supported yet!',
                 parentExpectedResult,
                 parentActualResult,
+                showParentObjects,
             );
+            showParentObjects = false;
         }
     }
 
