@@ -1,6 +1,6 @@
 {
   "name": "qansigliere-compare2jsons",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "This library is based on Javascript language and it contains a method to compare 2 different JSON objects and provide the clear differences between them",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "diff"
   ],
   "author": "qansigliere@gmail.com",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/QANSIGLIERE/compare2JSONFiles/issues"
   },
