@@ -1,0 +1,2 @@
+export function compare2JSONs(expectedResult: any, actualResult: any, uniquenessJSONKeys?: any[], parentExpectedResult?: any, parentActualResult?: any, showParentObjects?: boolean): boolean;
+//# sourceMappingURL=compare2JSONs.d.ts.map
