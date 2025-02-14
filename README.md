@@ -9,7 +9,11 @@ https://www.youtube.com/@QANSIGLIERE/
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/gYegROgTqNg/0.jpg)](https://www.youtube.com/watch?v=gYegROgTqNg)
 
-## Installing
+## Support the project
+
+https://buymeacoffee.com/qansigliere
+
+## Installation
 
 Using npm:
 
@@ -86,6 +90,6 @@ Error: These two objects do not match to each other!
 false
 ```
 
-## Improvements and Suggestions
+## Improvements & Suggestions
 
-https://forms.gle/6TXrAAoGvPX5kgjt8
+https://forms.gle/GZbS9hw42tSYJxKL7
